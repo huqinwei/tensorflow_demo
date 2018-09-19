@@ -1,0 +1,23 @@
+import tensorflow as tf
+sess = tf.Session()
+
+x = tf.constant([[1,1,1],[1,1,1]])
+print(sess.run(x))
+print("default:")
+print(sess.run(tf.reduce_sum(x)))
+print(sess.run(tf.reduce_sum(x,0)))
+print(sess.run(tf.reduce_sum(x,1)))
+print(sess.run(tf.reduce_sum(x,1,keepdims = True)))
+print("coincidence:")
+print(sess.run(tf.reduce_sum(x,[0,1])))
+
+x2 = tf.constant([[[1,1,1],[1,1,1]],[[1,1,1],[1,1,1]],[[1,1,1],[1,1,1]]])
+print(sess.run(x2))
+print("default:")
+print(sess.run(tf.reduce_sum(x2)))
+print(sess.run(tf.reduce_sum(x2,0)))
+print(sess.run(tf.reduce_sum(x2,1)))
+print(sess.run(tf.reduce_sum(x2,2)))
+print(sess.run(tf.reduce_sum(x2,1,keepdims = True)))
+print("surprise:")
+print(sess.run(tf.reduce_sum(x2,[0,1])))
