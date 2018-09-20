@@ -81,8 +81,39 @@ with tf.Session() as sess:
         print('variable is w1:',w1_,' w2:',w2_,' w3:',w3_, ' and the loss is ',loss_)
         sess.run(train_step,{x:1})
 '''
+
 ###########################################################################################
-#demo4:manual gradient descent
+#demo4:manual gradient descent in tensorflow
+#y label
+'''
+y = tf.constant(3,dtype = tf.float32)
+x = tf.placeholder(dtype = tf.float32)
+w = tf.Variable(2,dtype=tf.float32)
+#prediction
+p = w*x
+
+#define losses
+l = tf.square(p - y)
+g = tf.gradients(l, w)
+learning_rate = tf.constant(1,dtype=tf.float32)
+init = tf.global_variables_initializer()
+
+#update
+update = tf.assign(w, w - learning_rate * g[0])
+
+with tf.Session() as sess:
+    sess.run(init)
+    print(sess.run([g,p,w], {x: 1}))
+    for _ in range(5):
+        w_,g_,l_ = sess.run([w,g,l],feed_dict={x:1})
+        print('variable is w:',w_, ' g is ',g_,'  and the loss is ',l_)
+
+        _ = sess.run(update,feed_dict={x:1})
+
+'''
+
+###########################################################################################
+#demo5:manual gradient descent
 #define variable and error
 '''
 from sympy import *
@@ -143,33 +174,3 @@ for _ in range(5):
 
     w = w - learning_rate * final_g
     '''
-###########################################################################################
-#demo5:manual gradient descent in tensorflow
-#y label
-'''
-y = tf.constant(3,dtype = tf.float32)
-x = tf.placeholder(dtype = tf.float32)
-w = tf.Variable(2,dtype=tf.float32)
-#prediction
-p = w*x
-
-#define losses
-l = tf.square(p - y)
-g = tf.gradients(l, w)
-learning_rate = tf.constant(1,dtype=tf.float32)
-init = tf.global_variables_initializer()
-
-#update
-update = tf.assign(w, w - learning_rate * g[0])
-
-with tf.Session() as sess:
-    sess.run(init)
-    print(sess.run([g,p,w], {x: 1}))
-    for _ in range(5):
-        w_,g_,l_ = sess.run([w,g,l],feed_dict={x:1})
-        print('variable is w:',w_, ' g is ',g_,'  and the loss is ',l_)
-
-        _ = sess.run(update,feed_dict={x:1})
-
-'''
-
