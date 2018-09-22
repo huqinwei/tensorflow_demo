@@ -113,7 +113,7 @@ with tf.Session() as sess:
 '''
 
 ###########################################################################################
-#demo5:manual gradient descent
+#demo4.2:todo:manual gradient descent in python api
 #define variable and error
 '''
 from sympy import *
@@ -138,6 +138,8 @@ for _ in range(5):
     print('variable w is:', w, ' and the loss is ',make_up_loss)
 
 '''
+
+'''
 from sympy import *
 import numpy as np
 w2=Symbol('w2')
@@ -147,7 +149,7 @@ deri = diff(l2,w2)#this is a expression,not a value
 print('diff l2 w2:',deri)
 #print('diff l2 w2:',deri(2))#error:'mul'object?
 print('final der is ',deri * w2)
-
+'''
 '''
 y = 3
 x = 1
@@ -174,3 +176,78 @@ for _ in range(5):
 
     w = w - learning_rate * final_g
     '''
+
+###################################################################
+#demo5 tensorflow momentum
+
+y = tf.constant(3,dtype = tf.float32)
+x = tf.placeholder(dtype = tf.float32)
+w = tf.Variable(2,dtype=tf.float32)
+#prediction
+p = w*x
+
+#define losses
+l = tf.square(p - y)
+g = tf.gradients(l, w)
+Mu = 0.8
+LR = tf.constant(0.01,dtype=tf.float32)
+
+init = tf.group(tf.global_variables_initializer(),tf.local_variables_initializer())
+
+#update w
+update = tf.train.MomentumOptimizer(LR, Mu).minimize(l)
+
+with tf.Session() as sess:
+    sess.run(init)
+    sess.run(tf.global_variables_initializer())
+    sess.run(tf.local_variables_initializer())
+    print(sess.run([g,p,w], {x: 1}))
+    for _ in range(10):
+        w_,g_,l_ = sess.run([w,g,l],feed_dict={x:1})
+        print('variable is w:',w_, ' g is ',g_, '  and the loss is ',l_)
+
+        sess.run([update],feed_dict={x:1})
+
+###########################################################################################
+#demo5.2:manual momentum in tensorflow
+'''
+y = tf.constant(3,dtype = tf.float32)
+x = tf.placeholder(dtype = tf.float32)
+w = tf.Variable(2,dtype=tf.float32)
+#prediction
+p = w*x
+
+#define losses
+l = tf.square(p - y)
+g = tf.gradients(l, w)
+Mu = 0.8
+LR = tf.constant(0.01,dtype=tf.float32)
+#v = tf.Variable(0,tf.float32)#error?secend param is not dtype?
+v = tf.Variable(0,dtype = tf.float32)
+init = tf.global_variables_initializer()
+
+#update w
+update1 = tf.assign(v, Mu * v + g[0] * LR )
+update2 = tf.assign(w, w - v)
+update = tf.group(update1,update2)
+
+with tf.Session() as sess:
+    sess.run(init)
+    print(sess.run([g,p,w], {x: 1}))
+    for _ in range(10):
+        w_,g_,l_,v_ = sess.run([w,g,l,v],feed_dict={x:1})
+        print('variable is w:',w_, ' g is ',g_, ' v is ',v_,'  and the loss is ',l_)
+
+        _ = sess.run([update],feed_dict={x:1})
+'''
+
+
+
+
+
+
+
+
+
+
+
