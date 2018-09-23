@@ -52,6 +52,34 @@ with tf.Session() as sess:
         sess.run(train_step,{x:1})
 '''
 
+##########################################################################################3
+#demo2.2  another way to collect var_list
+
+label = tf.constant(1,dtype = tf.float32)
+x = tf.placeholder(dtype = tf.float32)
+w1 = tf.Variable(4,dtype=tf.float32)
+with tf.name_scope(name='selected_variable_to_trian'):
+    w2 = tf.Variable(4,dtype=tf.float32)
+w3 = tf.constant(4,dtype=tf.float32)
+
+y_predict = w1*x+w2*x+w3*x
+
+#define losses and train
+make_up_loss = (y_predict - label)**3
+optimizer = tf.train.GradientDescentOptimizer(0.01)
+
+output_vars = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, scope='selected_variable_to_trian')
+train_step = optimizer.minimize(make_up_loss,var_list = output_vars)
+
+init = tf.global_variables_initializer()
+with tf.Session() as sess:
+    sess.run(init)
+    for _ in range(3000):
+        w1_,w2_,w3_,loss_ = sess.run([w1,w2,w3,make_up_loss],feed_dict={x:1})
+        print('variable is w1:',w1_,' w2:',w2_,' w3:',w3_, ' and the loss is ',loss_)
+        sess.run(train_step,{x:1})
+
+
 ###########################################################################################
 #demo3:test all possible error formula
 #define variable and error
@@ -179,7 +207,7 @@ for _ in range(5):
 
 ###################################################################
 #demo5 tensorflow momentum
-
+'''
 y = tf.constant(3,dtype = tf.float32)
 x = tf.placeholder(dtype = tf.float32)
 w = tf.Variable(2,dtype=tf.float32)
@@ -207,7 +235,7 @@ with tf.Session() as sess:
         print('variable is w:',w_, ' g is ',g_, '  and the loss is ',l_)
 
         sess.run([update],feed_dict={x:1})
-
+'''
 ###########################################################################################
 #demo5.2:manual momentum in tensorflow
 '''
@@ -240,9 +268,6 @@ with tf.Session() as sess:
 
         _ = sess.run([update],feed_dict={x:1})
 '''
-
-
-
 
 
 
