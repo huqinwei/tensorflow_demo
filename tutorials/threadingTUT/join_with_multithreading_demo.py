@@ -32,9 +32,9 @@ def main():
     print(threading.current_thread())
     #Thread(func())wrong!didn't create a new threading,just called update() once
 
-    '''
-    #demo0:default:real multi threading in this example
-
+    ########################demo start#######################################
+    #demo0:default:real multi threading,
+    #but not real wait(if there is no while loop) thread ends
     thread1 = threading.Thread(target=update)
     thread1.start()
     while (1):
@@ -46,9 +46,9 @@ def main():
         print('newly threading count:', threading.active_count())
         print('in main:current thread is ', threading.current_thread())
 
-
     #demo1:join finally,no effect
     # because main function didn't execute join yet
+    '''
     thread1 = threading.Thread(target=update)
     thread1.start()
 
@@ -62,8 +62,9 @@ def main():
         print('in main:current thread is ', threading.current_thread())
 
     thread1.join()
-
+'''
     #demo2:join firstly,and main function just wait in this step
+    '''
     thread1 = threading.Thread(target=update)
     thread1.start()
     thread1.join()
@@ -77,13 +78,17 @@ def main():
         print('in main:current thread is ', threading.current_thread())
 '''
     #demo3:another way to realize real multi threading
+    '''
     thread1 = threading.Thread(target=update)
     thread2 = threading.Thread(target=ask)
     thread1.start()
     thread2.start()
     thread1.join()
     thread2.join()
+'''
 
+
+    ###################demo end##############
     print('main finish')
 
 
