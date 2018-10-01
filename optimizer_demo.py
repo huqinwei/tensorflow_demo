@@ -54,7 +54,7 @@ with tf.Session() as sess:
 
 ##########################################################################################3
 #demo2.2  another way to collect var_list
-
+'''
 label = tf.constant(1,dtype = tf.float32)
 x = tf.placeholder(dtype = tf.float32)
 w1 = tf.Variable(4,dtype=tf.float32)
@@ -78,7 +78,58 @@ with tf.Session() as sess:
         w1_,w2_,w3_,loss_ = sess.run([w1,w2,w3,make_up_loss],feed_dict={x:1})
         print('variable is w1:',w1_,' w2:',w2_,' w3:',w3_, ' and the loss is ',loss_)
         sess.run(train_step,{x:1})
+'''
 
+##########################################################################################3
+#demo2.3  another way to avoid variable be train
+
+label = tf.constant(1,dtype = tf.float32)
+x = tf.placeholder(dtype = tf.float32)
+w1 = tf.Variable(4,dtype=tf.float32,trainable=False)
+w2 = tf.Variable(4,dtype=tf.float32)
+w3 = tf.constant(4,dtype=tf.float32)
+
+y_predict = w1*x+w2*x+w3*x
+
+#define losses and train
+make_up_loss = (y_predict - label)**3
+optimizer = tf.train.GradientDescentOptimizer(0.01)
+
+train_step = optimizer.minimize(make_up_loss)
+
+init = tf.global_variables_initializer()
+with tf.Session() as sess:
+    sess.run(init)
+    for _ in range(3000):
+        w1_,w2_,w3_,loss_ = sess.run([w1,w2,w3,make_up_loss],feed_dict={x:1})
+        print('variable is w1:',w1_,' w2:',w2_,' w3:',w3_, ' and the loss is ',loss_)
+        sess.run(train_step,{x:1})
+
+##########################################################################################3
+#demo2.4  another way to avoid variable be train
+
+label = tf.constant(1,dtype = tf.float32)
+x = tf.placeholder(dtype = tf.float32)
+w1 = tf.Variable(4,dtype=tf.float32,trainable=False)
+w2 = tf.Variable(4,dtype=tf.float32)
+w3 = tf.constant(4,dtype=tf.float32)
+
+y_predict = w1*x+w2*x+w3*x
+
+#define losses and train
+make_up_loss = (y_predict - label)**3
+optimizer = tf.train.GradientDescentOptimizer(0.01)
+
+output_vars = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES)
+train_step = optimizer.minimize(make_up_loss,var_list = output_vars)
+
+init = tf.global_variables_initializer()
+with tf.Session() as sess:
+    sess.run(init)
+    for _ in range(3000):
+        w1_,w2_,w3_,loss_ = sess.run([w1,w2,w3,make_up_loss],feed_dict={x:1})
+        print('variable is w1:',w1_,' w2:',w2_,' w3:',w3_, ' and the loss is ',loss_)
+        sess.run(train_step,{x:1})
 
 ###########################################################################################
 #demo3:test all possible error formula
@@ -257,7 +308,7 @@ init = tf.global_variables_initializer()
 #update w
 update1 = tf.assign(v, Mu * v + g[0] * LR )
 update2 = tf.assign(w, w - v)
-update = tf.group(update1,update2)
+#update = tf.group(update1,update2)#wrong sequence!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 with tf.Session() as sess:
     sess.run(init)
@@ -266,13 +317,86 @@ with tf.Session() as sess:
         w_,g_,l_,v_ = sess.run([w,g,l,v],feed_dict={x:1})
         print('variable is w:',w_, ' g is ',g_, ' v is ',v_,'  and the loss is ',l_)
 
-        _ = sess.run([update],feed_dict={x:1})
+        _ = sess.run([update1],feed_dict={x:1})
+        _ = sess.run([update2],feed_dict={x:1})
+'''
+
+
+
+###########################################################################################
+#demo6:adagrad optimizer in tensorflow
+'''
+y = tf.constant(3,dtype = tf.float32)
+x = tf.placeholder(dtype = tf.float32)
+w = tf.Variable(2,dtype=tf.float32)
+#prediction
+p = w*x
+
+#define losses
+l = tf.square(p - y)
+g = tf.gradients(l, w)
+LR = tf.constant(0.6,dtype=tf.float32)
+optimizer = tf.train.AdagradOptimizer(LR)
+update = optimizer.minimize(l)
+init = tf.global_variables_initializer()
+
+
+with tf.Session() as sess:
+    sess.run(init)
+    #print(sess.run([g,p,w], {x: 1}))
+    for _ in range(20):
+        w_,l_,g_ = sess.run([w,l,g],feed_dict={x:1})
+        print('variable is w:',w_, 'g:',g_ ,'  and the loss is ',l_)
+
+        _ = sess.run(update,feed_dict={x:1})
+
+'''
+###########################################################################################
+#demo6.2:manual adagrad
+
+#with tf.name_scope('initial'):
+'''
+y = tf.constant(3,dtype = tf.float32)
+x = tf.placeholder(dtype=tf.float32)
+w = tf.Variable(2,dtype=tf.float32,expected_shape=[1])
+second_derivative = tf.Variable(0,dtype=tf.float32)
+LR = tf.constant(0.6,dtype=tf.float32)
+Regular = 1e-8
+
+#prediction
+p = w*x
+#loss
+l = tf.square(p - y)
+#gradients
+g = tf.gradients(l, w)
+#print(g)
+#print(tf.square(g))
+
+#update
+update1 = tf.assign_add(second_derivative,tf.square(g[0]))
+g_final = LR * g[0] / (tf.sqrt(second_derivative) + Regular)
+update2 = tf.assign(w, w - g_final)
+
+#update = tf.assign(w, w - LR * g[0])
+
+init = tf.global_variables_initializer()
+
+with tf.Session() as sess:
+    sess.run(init)
+    print(sess.run([g,p,w], {x: 1}))
+    for _ in range(20):
+        _ = sess.run(update1,feed_dict={x:1.0})
+        w_,g_,l_,g_sec_ = sess.run([w,g,l,second_derivative],feed_dict={x:1.0})
+        print('variable is w:',w_, ' g is ',g_,' g_sec_ is ',g_sec_,'  and the loss is ',l_)
+        #sess.run(g_final)
+
+        _ = sess.run(update2,feed_dict={x:1.0})
+
 '''
 
 
 
 
-
-
+#there is no SGD and mini-batch optimizer,just GD
 
 

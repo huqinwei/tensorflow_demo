@@ -18,8 +18,18 @@ n = 1024    # data size
 X = np.random.normal(0, 1, n)
 Y = np.random.normal(0, 1, n)
 T = np.arctan2(Y, X)    # for color later on
+print(len(T))
+print(T[:20])
 
-plt.scatter(X, Y, s=75, c=T, alpha=.5)
+#plt.scatter(X, Y, s=75, c=T, alpha=.5)
+#plt.scatter(X, Y, s=75, c=T, alpha=.5)
+
+#comparision:use c and cmap in the same time
+plt.scatter(X, Y, s=75, c=T, cmap='Blues', alpha=.5)
+#plt.scatter(X, Y, s=75, cmap='Blues', alpha=.5)
+
+
+print(type(plt))
 
 plt.xlim(-1.5, 1.5)
 plt.xticks(())  # ignore xticks

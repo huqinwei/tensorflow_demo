@@ -2,6 +2,8 @@ import tensorflow as tf
 import numpy as np
 
 k = np.float32([1, 4, 6, 4, 1])
+k2 = np.inner(k,k)
+print('inner:',k2)#inner equals to 1+16+36+16+1?yes!!!!!!!!!!!!!!
 k = np.outer(k, k)
 print('kernel:\n',k)
 k5x5 = k[:,:] / k.sum() 

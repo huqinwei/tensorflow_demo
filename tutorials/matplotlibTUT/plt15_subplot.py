@@ -26,8 +26,9 @@ plt.plot([0, 1], [0, 2])
 plt.subplot(223)
 plt.plot([0, 1], [0, 3])
 
-plt.subplot(224)
-plt.plot([0, 1], [0, 4])
+plt.subplot(221)
+#plt.plot([0, 1], [0, 4])
+plt.plot([0, 10], [0, 3.5])
 
 plt.tight_layout()
 
@@ -39,7 +40,12 @@ plt.subplot(2, 1, 1)
 # figure splits into 2 rows, 1 col, plot to the 1st sub-fig
 plt.plot([0, 1], [0, 1])
 
-plt.subplot(234)
+
+#test
+#plt.subplot(211)#demo1:mixed
+#plt.subplot(231)#demo2:overwrite
+#plt.subplot(232)#demo3:overwrite
+plt.subplot(234)#demo4:new plot in other place
 # figure splits into 2 rows, 3 col, plot to the 4th sub-fig
 plt.plot([0, 1], [0, 2])
 

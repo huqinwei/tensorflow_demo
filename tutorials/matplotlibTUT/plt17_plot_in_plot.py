@@ -32,6 +32,7 @@ ax2.set_ylabel('y')
 ax2.set_title('title inside 1')
 
 
+
 # different method to add axes
 ####################################
 plt.axes([0.6, 0.2, 0.25, 0.25])

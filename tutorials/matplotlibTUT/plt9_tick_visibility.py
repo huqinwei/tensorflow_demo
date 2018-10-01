@@ -30,8 +30,17 @@ ax.yaxis.set_ticks_position('left')
 ax.spines['left'].set_position(('data', 0))
 
 
-for label in ax.get_xticklabels() + ax.get_yticklabels():
-    label.set_fontsize(12)
+#for label in ax.get_xticklabels() + ax.get_yticklabels():
+    #label.set_fontsize(14)
     # set zorder for ordering the plot in plt 2.0.2 or higher
-    label.set_bbox(dict(facecolor='white', edgecolor='none', alpha=0.8, zorder=2))
+    #label.set_bbox(dict(facecolor='white', edgecolor='none', alpha=0.8, zorder=2))
+    #label.set_bbox(dict(facecolor='yellow', edgecolor='none', alpha=0.8, zorder=2))
+    #label.set_bbox(dict(facecolor='y', edgecolor='r', alpha=0.8, zorder=2))#y!=yellow
+for label in ax.get_xticklabels():
+    print(label)
+print('#####################################')
+for label in ax.get_yticklabels():
+    print(label)
+#for label in ax.get_xticklabels() + ax.get_yticklabels():
+#    print(label)
 plt.show()
