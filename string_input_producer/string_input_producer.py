@@ -121,13 +121,35 @@ if not os.path.exists('read'):
 #demo5.2   #does the key is same?NO!
 #WholeFile:b'A.jpg'
 #Fixed:b'A.jpg:n'  n is iter counts
+# with tf.Session() as sess:
+#     filename = ['A.jpg', 'B.jpg', 'C.jpg']
+#     filename_queue = tf.train.string_input_producer(string_tensor = filename, shuffle = False, num_epochs= 1)
+#
+#     #reader = tf.FixedLengthRecordReader(20)#demo 5
+#     reader = tf.WholeFileReader()#demo 5
+#     key_value = reader.read(filename_queue)  # read a tuple every time!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+#
+#     tf.local_variables_initializer().run()
+#     tf.train.start_queue_runners(sess=sess)
+#
+#     i = 0
+#
+#     while True:
+#         print('i is %d'   %i)
+#         i += 1
+#         key_,value_ = sess.run(key_value)
+#         print("key is ",key_)
+#         print(" and value is ",value_, ", read done!")
+#         # with open('read/test_%d.jpg' % i, 'wb') as f:
+#         #     f.write(image_data)
+
+#demo6
+#Can not convert a FIFOQueue into a Tensor or Operation.
 with tf.Session() as sess:
     filename = ['A.jpg', 'B.jpg', 'C.jpg']
     filename_queue = tf.train.string_input_producer(string_tensor = filename, shuffle = False, num_epochs= 1)
 
     #reader = tf.FixedLengthRecordReader(20)#demo 5
-    reader = tf.WholeFileReader()#demo 5
-    key_value = reader.read(filename_queue)  # read a tuple every time!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
     tf.local_variables_initializer().run()
     tf.train.start_queue_runners(sess=sess)
@@ -137,11 +159,12 @@ with tf.Session() as sess:
     while True:
         print('i is %d'   %i)
         i += 1
-        key_,value_ = sess.run(key_value)
-        print("key is ",key_)
+        value_ = sess.run(filename_queue)
+
         print(" and value is ",value_, ", read done!")
         # with open('read/test_%d.jpg' % i, 'wb') as f:
         #     f.write(image_data)
+
 
 
 
