@@ -1,4 +1,5 @@
 import tensorflow as tf
+import numpy as np
 
 # tf.nn.conv2d(input, filter, strides, padding, use_cudnn_on_gpu=None, name=None)
 # 除去name参数用以指定该操作的name，与方法有关的一共五个参数：
@@ -112,6 +113,42 @@ op2 = tf.nn.conv2d(input_arg, filter_arg,  strides=[1,1,1,1], padding='SAME')
 
 oplist.append([op2, "case 24"])
 
+
+#pooling
+input_arg  = tf.Variable(tf.ones([1, 3, 3, 1]))
+op2 = tf.nn.max_pool(value = input_arg, ksize = [1,2,2,1], strides = [1,2,2,1], padding = 'SAME')
+oplist.append([op2, "case 25"])
+#ksize do not influence padding and output size
+input_arg  = tf.Variable(tf.ones([1, 3, 3, 1]))
+op2 = tf.nn.max_pool(value = input_arg, ksize = [1,3,3,1], strides = [1,2,2,1], padding = 'SAME')
+oplist.append([op2, "case 26"])
+#ksize do not influence padding and output size
+input_arg  = tf.Variable(tf.ones([1, 3, 3, 1]))
+op2 = tf.nn.max_pool(value = input_arg, ksize = [1,16,16,1], strides = [1,2,2,1], padding = 'SAME')
+oplist.append([op2, "case 27"])
+#############################################################################################
+#make up datas
+input_arg  = tf.Variable(np.array([1,2,3,4,5,6,7,8,9]).reshape(1,3,3,1))
+op2 = tf.nn.max_pool(value = input_arg, ksize = [1,16,16,1], strides = [1,1,1,1], padding = 'SAME')
+oplist.append([op2, "case 28"])
+op2 = input_arg
+oplist.append([op2, "original data"])
+
+op2 = tf.nn.max_pool(value = input_arg, ksize = [1,3,3,1], strides = [1,2,2,1], padding = 'SAME')#VALID:[[[[9]]]]
+oplist.append([op2, "case 30"])
+op2 = tf.nn.max_pool(value = input_arg, ksize = [1,4,4,1], strides = [1,2,2,1], padding = 'SAME')#VALID:error
+oplist.append([op2, "case 31"])
+
+
+
+# if strides_size == input_size,SAME has no effect!!!!!!!!!!!!!!
+# input_arg  = tf.Variable(tf.ones([1, 3, 3, 1]))
+# # [filter_height, filter_width, in_channels, out_channels]
+# filter_arg = tf.Variable(tf.ones([2 ,2 , 1 ,1]))
+# op2 = tf.nn.conv2d(input_arg, filter_arg, strides=[1,3,3,1], use_cudnn_on_gpu=False, padding='SAME')
+# oplist.append([op2, "case 61"])
+
+#################################################################################################
 
 with tf.Session() as a_sess:
     a_sess.run(tf.global_variables_initializer())
