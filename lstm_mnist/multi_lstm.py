@@ -7,7 +7,7 @@ from tensorflow.contrib import rnn
 LR = 0.01
 STEP_SIZE = 28
 INPUT_SIZE = 28
-BATCH_SIZE = 32
+BATCH_SIZE = 100
 HIDDEN_CELL = 256
 LSTM_LAYER = 3
 CLASS_NUM = 10
@@ -37,26 +37,21 @@ multi_lstm = rnn.MultiRNNCell(cells = [get_a_cell(i) for i in range(LSTM_LAYER)]
 init_state = multi_lstm.zero_state(batch_size = BATCH_SIZE, dtype = tf.float32)
 
 #example 1
-print('a:',multi_lstm)
-print('b:',tf_x_reshaped)
-outputs, state = tf.nn.dynamic_rnn(multi_lstm, inputs = tf_x_reshaped, initial_state = init_state, time_major = False)
-print('state:',state)
-print('state[0]:',state[0])#layer 0's LSTMStateTuple
-print('state[1]:',state[1])#layer 1's LSTMStateTuple
-print('state[2]:',state[2])#layer 2's LSTMStateTuple
-print('state[-1]:',state[-1])#layer 2's LSTMStateTuple
-# print('state[1][31]:',state[1][31])#layer 1
-print('outputs:', outputs)
-print('outputs:', outputs[0])
-print('outputs[31]:', outputs[31])
-final_out = outputs[:,-1,:]
-print(final_out)
-h_state_0 = state[0][1]
-h_state_1 = state[1][1]
-h_state = state[-1][1]
-h_state_2 = h_state
-#example 2
+# outputs, state = tf.nn.dynamic_rnn(multi_lstm, inputs = tf_x_reshaped, initial_state = init_state, time_major = False)
+# final_out = outputs[:,-1,:]
+# h_state = state[-1][1]
 
+#
+# #example 2
+outputs = list()
+state = init_state
+with tf.variable_scope('RNN'):
+    for timestep in range(STEP_SIZE):
+        # (cell_output, state) = multi_lstm(tf_x_reshaped[:,timestep,:],state)
+        (cell_output, state) = multi_lstm.call(tf_x_reshaped[:,timestep,:],state)
+        outputs.append(cell_output)
+        # print('cell_output:', cell_output)
+h_state = outputs[-1]
 
 #prediction and loss
 W = tf.Variable(initial_value = tf.truncated_normal([HIDDEN_CELL, CLASS_NUM], stddev = 0.1 ), dtype = tf.float32)
@@ -66,22 +61,35 @@ predictions = tf.nn.softmax(tf.matmul(h_state, W) + b)
 #sum   -ylogy^
 cross_entropy = -tf.reduce_sum(tf_y * tf.log(predictions))
 train_op = tf.train.AdamOptimizer(LR).minimize(cross_entropy)
+
+
+right_predictions_num = tf.equal(tf.argmax(predictions, axis = 1), tf.argmax(tf_y, axis = 1))
+accuracy = tf.reduce_mean(tf.cast(right_predictions_num, dtype = tf.float32))#tf.cast
+
+
 #train
 # keep_prob
 with tf.Session() as sess:
     sess.run(tf.global_variables_initializer())
-    for i in range(2):
+    tf.summary.FileWriter('graph', graph=sess.graph)
+    for i in range(2000):
         x,y = MNIST.train.next_batch(BATCH_SIZE)
-        _, loss_,outputs_, state_, h_state_0_, h_state_1_, h_state_2_ = \
-            sess.run([train_op, cross_entropy,outputs, state, h_state_0, h_state_1, h_state_2], {tf_x:x, tf_y:y, keep_prob:1.0})
+        _, loss_,outputs_, state_, right_predictions_num_  = \
+            sess.run([train_op, cross_entropy,outputs, state,right_predictions_num], {tf_x:x, tf_y:y, keep_prob:1.0})
         print('loss:', loss_)
-        print('outputs_:', outputs_.shape)
-        # print('state_[0]:', state_[0].shape)
-        # print('state_[1]:', state_[1].shape)
-        print('h_state_0_:', h_state_0_.shape)
-        print('h_state_1_:', h_state_1_.shape)
-        print('h_state_2_:', h_state_2_.shape)
-        print('h_state_2_ == outputs_[:,-1,:]:', h_state_2_ == outputs_[:,-1,:])
+        # print('right_predictions_num_:', right_predictions_num_)
+
+        if i % 200 == 0:
+            # tensorflow.python.framework.errors_impl.InvalidArgumentError: ConcatOp: Dimensions of inputs should match: shape[0] = [1000, 28] vs.shape[1] = [100, 256]
+            # test_x, test_y = MNIST.test.next_batch(BATCH_SIZE * 10)
+            total_accuracy = 0.
+            total_test_batch = 10
+            for j in range(total_test_batch):
+                test_x, test_y = MNIST.test.next_batch(BATCH_SIZE)
+                accuracy_ =  sess.run([accuracy], {tf_x:test_x, tf_y:test_y, keep_prob:1.0})
+                total_accuracy += accuracy_[0]
+            total_accuracy = total_accuracy / total_test_batch
+            print('total_accuracy:', total_accuracy)
 
 
 
