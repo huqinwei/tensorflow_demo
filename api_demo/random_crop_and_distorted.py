@@ -24,21 +24,21 @@ distorted103 = tf.image.random_contrast(image=input_for_distort, lower = 2.2, up
 
 
 with tf.Session() as sess:
-    print(sess.run(input_for_crop))
-    # print(sess.run(output))
-    # print(sess.run(output2))
+    print('input:\n',sess.run(input_for_crop))
+    print('output:\n',sess.run(output))
+    print('output2:\n',sess.run(output2))
     # print(sess.run(output3))
     # print(sess.run(output4))
     # print(sess.run(output5))
 
 
-    print(sess.run(distorted))
-    print(sess.run(distorted2))
+    print('distorted:\n',sess.run(distorted))
+    print('distorted2:\n',sess.run(distorted2))
 
 
-    print(sess.run(distorted100))
-    print(sess.run(distorted101))
-    print(sess.run(distorted102))
-    print(sess.run(distorted103))
+    print('distorted100:\n',sess.run(distorted100))
+    print('distorted101:\n',sess.run(distorted101))
+    print('distorted102:\n',sess.run(distorted102))
+    print('distorted103:\n',sess.run(distorted103))
 
 # distorted_image = tf.random_crop(reshaped_image, [height, width, 3])

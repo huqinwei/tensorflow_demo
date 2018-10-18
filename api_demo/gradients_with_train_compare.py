@@ -9,7 +9,7 @@ y_input = tf.placeholder(tf.float32, name='y_input')
 w = tf.Variable(2.0, name='weight')
 b = tf.Variable(1.0, name='biases')
 y = tf.add(tf.multiply(x_input, w), b)
-loss_op = tf.reduce_sum(tf.pow(y_input - y, 2)) / (2 * 32)
+loss_op = tf.reduce_sum(tf.pow(y_input - y, 2)) / (2 * 32)#2*32 does not matter in loss function,is constant
 train_op = tf.train.GradientDescentOptimizer(0.01).minimize(loss_op)
 
 '''tensorboard'''

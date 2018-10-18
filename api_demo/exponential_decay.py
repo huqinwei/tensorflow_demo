@@ -27,13 +27,20 @@ learning_rate = tf.train.exponential_decay(learning_rate = starter_learning_rate
 
 #passing global_step to minimize() will increment it at each step
 train_op1 = (
-    tf.train.GradientDescentOptimizer(global_step).minimize(loss,global_step = global_step)
+    tf.train.GradientDescentOptimizer(learning_rate).minimize(loss,global_step = global_step)
 )
 #this cannot change lr
 train_op2 = (
     #minimize()'s param global_step is the one to updates global_step
     #aka apply_gradients()
-    tf.train.GradientDescentOptimizer(global_step).minimize(loss)
+    tf.train.GradientDescentOptimizer(learning_rate).minimize(loss)
+)
+
+#tchange lr,but not use it.
+train_op22 = (
+    #minimize()'s param global_step is the one to updates global_step
+    #aka apply_gradients()
+    tf.train.GradientDescentOptimizer(starter_learning_rate).minimize(loss,global_step = global_step)
 )
 #this will change lr too
 optimizer = tf.train.GradientDescentOptimizer(learning_rate)
@@ -47,9 +54,10 @@ with tf.Session() as sess:
         print('predict:',sess.run(prediction))
         print('learning rate:',sess.run(learning_rate))
         print(sess.run(loss))
-        sess.run(train_op0)
+        # sess.run(train_op0)
         #sess.run(train_op1)
         #sess.run(train_op2)
+        sess.run(train_op22)
         #sess.run(train_op3)
 
 
