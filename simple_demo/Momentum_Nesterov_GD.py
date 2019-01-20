@@ -59,12 +59,12 @@ def gd(x_start, step, g):#gradient descent
 # res, x_arr = gd([150,75], 0.009, g)
 # res, x_arr = gd([150,75], 0.016, g)
 # res, x_arr = gd([150,75], 0.019, g)
-res, x_arr = gd([150,75], 0.020, g)#cannot convergence
+res, x_arr = gd([150,75], 0.0034, g)#cannot convergence
 # res, x_arr = gd([150,75], 0.023, g)
 # contour(X,Y,Z, x_arr)
 
 
-def momentum(x_start, step, g, discount = 0.7):
+def momentum(x_start, step, g, discount = 0.999):
     x = np.array(x_start, dtype='float64')
     passing_dot = [x.copy()]
     pre_grad = np.zeros_like(x)
@@ -80,8 +80,8 @@ def momentum(x_start, step, g, discount = 0.7):
             break
     return x, passing_dot
 
-res,x_arr = momentum([150,75],0.012,g)
-contour(X,Y,Z,x_arr)
+res,x_arr = momentum([150,75],0.0034,g)
+# contour(X,Y,Z,x_arr)
 
 # 1.Nesterov是Momentum的变种。
 # 2.与Momentum唯一区别就是，计算梯度的不同，Nesterov先用当前的速度v更新一遍参数，在用更新的临时参数计算梯度。
@@ -104,9 +104,28 @@ def nesterov(x_start, step, g, discount = 0.7):
         if abs(sum(grad)) < 1e-6:
             break
     return x, passing_dot
-res, x_arr = nesterov([150,75], 0.012, g)
+# res, x_arr = nesterov([150,75], 0.012, g)
+res, x_arr = nesterov([150,75], 0.0034, g)
 contour(X,Y,Z,x_arr)
 
+def nesterov2(x_start, step, g, discount = 0.7):
+    x = np.array(x_start, dtype='float64')
+    passing_dot = [x.copy()]
+    pre_grad = np.zeros_like(x)
+    for i in range(50):
+        x_future = x - discount * pre_grad#!!!!!!!!!!!!!!!!!!!temp update
+        grad = g(x_future)#!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!grad in temp update point
+        pre_grad = pre_grad * discount + grad * step
+        x -= pre_grad
+
+        passing_dot.append(x.copy())
+        print('[ Epoch {0} ] grad = {1}, x = {2}'.format(i,grad,x))
+        if abs(sum(grad)) < 1e-6:
+            break
+    return x, passing_dot
+# res, x_arr = nesterov([150,75], 0.012, g)
+res, x_arr = nesterov2([150,75], 0.0034, g)
+contour(X,Y,Z,x_arr)
 
 
 

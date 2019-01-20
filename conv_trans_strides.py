@@ -148,6 +148,15 @@ oplist.append([op2, "case 31"])
 # op2 = tf.nn.conv2d(input_arg, filter_arg, strides=[1,3,3,1], use_cudnn_on_gpu=False, padding='SAME')
 # oplist.append([op2, "case 61"])
 
+
+# [batch, in_height, in_width, in_channels]
+input_arg  = tf.Variable(tf.ones([1, 11, 11, 1]))
+# [filter_height, filter_width, in_channels, out_channels]
+filter_arg = tf.Variable(tf.ones([3 ,3 , 1 ,1]))
+op2 = tf.nn.conv2d(input_arg, filter_arg, strides=[1,2,2,1], use_cudnn_on_gpu=False, padding='SAME')
+oplist.append([op2, "case 61"])
+
+
 #################################################################################################
 
 with tf.Session() as a_sess:
