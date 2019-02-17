@@ -1,0 +1,2 @@
+model_checkpoint_path: "MNIST_lenet5_model-50003"
+all_model_checkpoint_paths: "MNIST_lenet5_model-50003"
